@@ -1,0 +1,8 @@
+@font-face {
+  font-family: "Guminert";
+  src: url("./fonts/Guminert.ttf") format("ttf");
+}
+
+body {
+    font-family: 'Guminert', sans-serif;
+  }
