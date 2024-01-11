@@ -18,6 +18,8 @@ import aguila1 from "../assets/AguilaHarpia_1.wav";
 import aguila2 from "../assets/AguilaHarpia_2.wav";
 import aguila3 from "../assets/AguilaHarpia_3.wav";
 import aguila4 from "../assets/AguilaHarpia_4.wav";
+import rio1 from "../assets/Rio_1.wav";
+import rio2 from "../assets/Rio_2.wav";
 import WaveSurfer from "wavesurfer.js";
 import UploadAudios from "../upload-audios/UploadAudios";
 const audiosAux = [
@@ -43,8 +45,13 @@ const audiosAux = [
   },
   {
     type: "5",
-    title: "Prueba 5",
-    wav: netflix,
+    title: "Rio 1",
+    wav: rio1,
+  },
+  {
+    type: "6",
+    title: "Rio 2",
+    wav: rio2,
   },
 ];
 
