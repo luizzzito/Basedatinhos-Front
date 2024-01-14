@@ -3,6 +3,7 @@ from tkinter import Tk, Label, Button, filedialog
 from pydub import AudioSegment
 import os
 
+
 class AudioSplitterGUI:
     def __init__(self, master):
         self.master = master
