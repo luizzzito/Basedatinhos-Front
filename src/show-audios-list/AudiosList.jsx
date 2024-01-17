@@ -105,12 +105,13 @@ function App() {
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: "60%",
+    width: "40%",
     bgcolor: "background.paper",
-    border: "2px solid #000",
     boxShadow: 24,
+    borderRadius: "",
     p: 4,
     display: "flex",
+    borderRadius: "10px",
   };
 
   useEffect(() => {
@@ -118,7 +119,12 @@ function App() {
   }, [generateAudioSpectrums]);
 
   return (
-    <Box>
+    <Box
+      sx={{
+        background: "linear-gradient(180deg, #42D2B8 0%, #425DD2 100%)",
+        py: "100px",
+      }}
+    >
       <Box
         sx={{
           display: "flex",
@@ -126,13 +132,25 @@ function App() {
           gap: "40px",
           maxWidth: "100%",
           width: "70%",
-          marginTop: "100px",
           mx: "130px",
           backgroundColor: "#F2F2F2",
-          padding: "100px",
+          px: "100px",
+          pt: "50px",
+          pb: "100px",
           borderRadius: "10px",
         }}
       >
+        <Typography
+          sx={{
+            fontFamily: "inter",
+            fontSize: "48px",
+            alignSelf: "center",
+            fontWeight: "700",
+            color: "#003459",
+          }}
+        >
+          Clasificador de Audios
+        </Typography>
         <Box>
           <Box
             sx={{
@@ -252,12 +270,7 @@ function App() {
         ))}
       </Box>
       <div>
-        <Modal
-          open={open}
-          onClose={() => setOpen(false)}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
+        <Modal open={open} onClose={() => setOpen(false)}>
           <Box sx={style}>
             <UploadAudios />
           </Box>

@@ -1,8 +1,23 @@
 import { Box, Icon, Button, Typography, TextField } from "@mui/material";
 import { useState, useRef, useEffect, useCallback } from "react";
+import { styled } from "@mui/material/styles";
 import WaveSurfer from "wavesurfer.js";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import PauseCircleIcon from "@mui/icons-material/PauseCircle";
+import UploadIcon from "@mui/icons-material/Upload";
+
+const VisuallyHiddenInput = styled("input")({
+  display: "flex",
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
 
 const UploadAudios = () => {
   const [file, setFile] = useState(null);
@@ -55,25 +70,46 @@ const UploadAudios = () => {
       >
         ¡Sube el audio que desees!
       </Typography>
-      <Box
+
+      <Button
+        component="label"
+        variant="contained"
         sx={{
-          width: "100%",
           display: "flex",
-          flexDirection: "column",
-          marginBottom: "25px",
+          width: "100%",
+          height: "200px",
+          flexDirection: "row",
+          justifySelf: "center",
+          textTransform: "capitalize",
+          backgroundColor: "#f4f4f4",
+          boxShadow: "none",
+          color: "black",
+          border: "2px solid #d4d4d4",
+          "&:hover": {
+            backgroundColor: "white",
+            boxShadow: "none",
+          },
         }}
+        onChange={onChange}
       >
-        <TextField
+        <Box
           sx={{
             display: "flex",
-            width: "100%",
-            alignItems: "center",
+            flexDirection: "column",
+            justifyContent: "center",
             justifyItems: "center",
+            alignItems: "center",
+            alignContent: "center",
+            width: "100%",
           }}
-          type="file"
-          onChange={onChange}
-        />
-      </Box>
+        >
+          <UploadIcon />
+          <Typography>Arrastra o sube tu audio</Typography>
+        </Box>
+
+        <VisuallyHiddenInput type="file" />
+      </Button>
+
       {file ? (
         <>
           <Box
@@ -92,7 +128,6 @@ const UploadAudios = () => {
                 alignItems: "center",
                 justifyContent: "center",
                 selfAlign: "center",
-                marginLeft: " 100px",
               }}
               onClick={() => handlePlay()}
             >
@@ -118,9 +153,17 @@ const UploadAudios = () => {
           </Box>
         </>
       ) : (
-        <Typography sx={{ display: "flex", alignSelf: "center" }}>
-          No se han subido audios
-        </Typography>
+        <Box
+          sx={{
+            marginTop: "20px",
+            display: "flex",
+            width: "100%",
+            alignContent: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Typography sx={{}}>No se han subido audios</Typography>
+        </Box>
       )}
       <Button
         sx={{
