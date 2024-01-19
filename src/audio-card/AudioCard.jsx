@@ -60,7 +60,9 @@ const AudioCard = ({ audio }) => {
           {audio.description}
         </Typography>
 
-        <Box sx={{ display: "flex", flexDirection: "row" }}>
+        <Box
+          sx={{ display: "flex", flexDirection: "row", wordWrap: "break-word" }}
+        >
           <Box
             sx={{
               display: "flex",
@@ -100,6 +102,7 @@ const AudioCard = ({ audio }) => {
             flexDirection: "row",
             justifyContent: "space-between",
             width: "100%",
+            wordWrap: "break-word",
           }}
         >
           <Box

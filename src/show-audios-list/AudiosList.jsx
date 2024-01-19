@@ -289,7 +289,7 @@ function App() {
       <div>
         <Modal open={open} onClose={() => setOpen(false)}>
           <Box sx={style}>
-            <UploadAudios />
+            <UploadAudios setOpen={setOpen} />
           </Box>
         </Modal>
       </div>

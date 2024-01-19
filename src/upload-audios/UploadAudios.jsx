@@ -13,7 +13,7 @@ import { v4 as uuidv4 } from "uuid";
 import { uploadAudio } from "../services/upload-audios";
 import { classify } from "../services/classify";
 
-const UploadAudios = () => {
+const UploadAudios = ({ setOpen }) => {
   const [file, setFile] = useState(null);
   const [audioTag, setAudioTag] = useState("");
   const [tag, setTag] = useState("");
@@ -91,7 +91,10 @@ const UploadAudios = () => {
         overflowY: "auto",
       }}
       component="form"
-      onSubmit={onSubmitForm}
+      onSubmit={() => {
+        onSubmitForm;
+        setOpen(false);
+      }}
     >
       <Typography
         sx={{
