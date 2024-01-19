@@ -1,65 +1,98 @@
-import { Box, Icon, Button, Typography, TextField } from "@mui/material";
-import { useState, useRef, useEffect, useCallback } from "react";
-import { styled } from "@mui/material/styles";
-import WaveSurfer from "wavesurfer.js";
-import PlayCircleIcon from "@mui/icons-material/PlayCircle";
-import PauseCircleIcon from "@mui/icons-material/PauseCircle";
-import UploadIcon from "@mui/icons-material/Upload";
-
-const VisuallyHiddenInput = styled("input")({
-  display: "flex",
-  clip: "rect(0 0 0 0)",
-  clipPath: "inset(50%)",
-  height: 1,
-  overflow: "hidden",
-  position: "absolute",
-  bottom: 0,
-  left: 0,
-  whiteSpace: "nowrap",
-  width: 1,
-});
+import {
+  Box,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Button,
+  Typography,
+  TextField,
+} from "@mui/material";
+import { useState, useEffect, useCallback } from "react";
+import { v4 as uuidv4 } from "uuid";
+import { uploadAudio } from "../services/upload-audios";
+import { classify } from "../services/classify";
 
 const UploadAudios = () => {
   const [file, setFile] = useState(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const wavesurfer = useRef(null);
+  const [audioTag, setAudioTag] = useState("");
+  const [tag, setTag] = useState("");
+  const [description, setDescription] = useState("");
+  const [copyright, setCopyright] = useState("");
+  const [reference, setReference] = useState("");
 
-  const onChange = (event) => {
-    setFile(URL.createObjectURL(event.target.files[0]));
+  const onChangeFile = (event) => {
+    setFile(event.target.files[0]);
+  };
+  const handleChangeTag = (event) => {
+    setTag(event.target.value);
   };
 
-  const generateAudioSpectrums = useCallback(() => {
-    if (file) {
-      wavesurfer.current = WaveSurfer.create({
-        container: `#waveform`,
-        waveColor: "#00A8E8",
-        progressColor: "#007EA7",
-      });
+  const handleChangeDescription = (event) => {
+    setDescription(event.target.value);
+  };
 
-      wavesurfer.current.load(file);
+  const handleChangeCopyright = (event) => {
+    setCopyright(event.target.value);
+  };
 
-      return () => {
-        wavesurfer.current.destroy();
-      };
-    }
-  }, [file]);
+  const handleChangeReference = (event) => {
+    setReference(event.target.value);
+  };
 
-  const handlePlay = () => {
-    if (wavesurfer.current.isPlaying()) {
-      wavesurfer.current.pause();
-      setIsPlaying(false);
-    } else {
-      wavesurfer.current.play();
-      setIsPlaying(true);
-    }
+  const getAudioTag = async (file) => {
+    try {
+      if (!file) return;
+      const res = await classify(file);
+      console.log(res);
+      const words = res.category.split(" ");
+      setAudioTag(words[5]);
+      console.log(audioTag);
+      return res;
+    } catch (error) {}
   };
 
   useEffect(() => {
-    generateAudioSpectrums();
-  }, [generateAudioSpectrums]);
+    getAudioTag(file);
+  }, [getAudioTag]);
+
+  const uuid = uuidv4();
+
+  const onSubmitForm = async (event) => {
+    event.preventDefault();
+    try {
+      const body = {
+        id: uuid,
+        description,
+        reference,
+        type: "Sonido",
+        copyright,
+        tag,
+        file,
+        work_id: "",
+        author_id: "",
+        publication_id: "",
+      };
+      const response = await uploadAudio(body);
+      console.log(response);
+      return response;
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        width: "100%",
+        margin: "30px",
+        overflowY: "auto",
+      }}
+      component="form"
+      onSubmit={onSubmitForm}
+    >
       <Typography
         sx={{
           fontFamily: "inter",
@@ -71,87 +104,82 @@ const UploadAudios = () => {
         ¡Sube el audio que desees!
       </Typography>
 
-      <Button
-        component="label"
-        variant="contained"
+      <Box
         sx={{
           display: "flex",
+          gap: "10px",
+          flexDirection: "column",
           width: "100%",
-          height: "200px",
-          flexDirection: "row",
-          justifySelf: "center",
-          textTransform: "capitalize",
-          backgroundColor: "#f4f4f4",
-          boxShadow: "none",
-          color: "black",
-          border: "2px solid #d4d4d4",
-          "&:hover": {
-            backgroundColor: "white",
-            boxShadow: "none",
-          },
         }}
-        onChange={onChange}
       >
         <Box
           sx={{
             display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            justifyItems: "center",
-            alignItems: "center",
-            alignContent: "center",
+            flexDirection: "row",
             width: "100%",
+            gap: "10px",
           }}
         >
-          <UploadIcon />
-          <Typography>Arrastra o sube tu audio</Typography>
+          <TextField
+            required
+            id="description"
+            label="Título"
+            onChange={handleChangeDescription}
+            sx={{ width: "50%" }}
+          />
+          <FormControl required sx={{ width: "50%" }}>
+            <InputLabel>Etiqueta</InputLabel>
+            <Select id="tag" onChange={handleChangeTag} label="Etiqueta">
+              <MenuItem value={"musica"}>Música</MenuItem>
+              <MenuItem value={"animal"}>Animal</MenuItem>
+              <MenuItem value={"ambiental"}>Ambiental</MenuItem>
+            </Select>
+          </FormControl>
         </Box>
 
-        <VisuallyHiddenInput type="file" />
-      </Button>
+        <TextField
+          required
+          id="copyright"
+          label="Derechos de autor"
+          onChange={handleChangeCopyright}
+        />
 
-      {file ? (
-        <>
-          <Box
+        <TextField
+          required
+          id="reference"
+          label="Referencia"
+          onChange={handleChangeReference}
+        />
+        <TextField variant="standard" type="file" onChange={onChangeFile} />
+      </Box>
+
+      {file && audioTag ? (
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            marginTop: "10px",
+            alignItems: "center",
+          }}
+        >
+          <Typography sx={{ fontFamily: "inter" }}>
+            La clasificación es:
+          </Typography>
+          <Typography
             sx={{
-              display: "flex",
-              flexDirection: "row",
-              flexWrap: "wrap",
-              width: "100%",
-              gap: "40px",
-              height: "100%",
+              marginLeft: "10px",
+              background: "#425DD2",
+              borderRadius: "6px",
+              px: "10px",
+              py: "2px",
+              color: "white",
+              textTransform: "capitalize",
+              fontFamily: "inter",
             }}
           >
-            <Button
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                selfAlign: "center",
-              }}
-              onClick={() => handlePlay()}
-            >
-              <Icon sx={{ height: "100px", width: "100px" }}>
-                {isPlaying ? (
-                  <PauseCircleIcon sx={{ height: "100px", width: "100px" }} />
-                ) : (
-                  <PlayCircleIcon sx={{ height: "100px", width: "100px" }} />
-                )}
-              </Icon>
-            </Button>
-            <Box sx={{ flexGrow: 1 }}>
-              <Box
-                component="div"
-                id={"waveform"}
-                sx={{
-                  width: "55%",
-                  height: "100%",
-                  position: "absolute",
-                }}
-              />
-            </Box>
-          </Box>
-        </>
+            {audioTag}
+          </Typography>
+        </Box>
       ) : (
         <Box
           sx={{
@@ -165,12 +193,12 @@ const UploadAudios = () => {
           <Typography sx={{}}>No se han subido audios</Typography>
         </Box>
       )}
+
       <Button
         sx={{
           display: "flex",
           alignSelf: "center",
           width: "100px",
-          marginTop: "50px",
           backgroundColor: "#007ea7",
           "&:hover": {
             backgroundColor: "#003459",
@@ -178,8 +206,10 @@ const UploadAudios = () => {
           textTransform: "capitalize",
           fontFamily: "inter",
           fontSize: "16px",
+          marginTop: "10px",
         }}
         variant="contained"
+        type="submit"
       >
         Guardar
       </Button>
