@@ -91,10 +91,7 @@ const UploadAudios = ({ setOpen }) => {
         overflowY: "auto",
       }}
       component="form"
-      onSubmit={() => {
-        onSubmitForm;
-        setOpen(false);
-      }}
+      onSubmit={onSubmitForm}
     >
       <Typography
         sx={{
